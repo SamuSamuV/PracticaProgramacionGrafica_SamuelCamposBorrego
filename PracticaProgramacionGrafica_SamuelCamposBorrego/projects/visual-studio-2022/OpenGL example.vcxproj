@@ -44,13 +44,19 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../shared/code;../../../libraries/sdl3/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../shared/code;../../../libraries/sdl3/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include;../../../libraries/half/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -67,7 +73,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../shared/code;../../../libraries/sdl3/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../shared/code;../../../libraries/sdl3/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
