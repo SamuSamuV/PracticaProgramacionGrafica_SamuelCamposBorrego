@@ -1,0 +1,4 @@
+SKYBOX ../../../shared/assets/sky-cube-map-
+TERRAIN 20.0 20.0 100 100
+WATER 50.0 50.0
+CUBE_MALLA

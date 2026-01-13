@@ -1,5 +1,5 @@
 
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // angel.rodriguez@udit.es
 
 #ifndef CUBE_HEADER
@@ -15,7 +15,7 @@ namespace udit
     {
     private:
 
-        // Índices para indexar el array vbo_ids:
+        // ?ndices para indexar el array vbo_ids:
 
         enum
         {

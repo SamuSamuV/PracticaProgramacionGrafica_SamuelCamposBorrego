@@ -1,4 +1,4 @@
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // samuel.campos@alumnos.udit.es
 
 #include "Water.hpp"
@@ -50,7 +50,7 @@ namespace udit
         float w = width / 2.0f;
         float d = depth / 2.0f;
 
-        // Vértices (X, Y, Z)
+        // V?rtices (X, Y, Z)
         std::vector<float> vertices = {
             -w, y, -d, // Top Left
             -w, y,  d, // Bottom Left

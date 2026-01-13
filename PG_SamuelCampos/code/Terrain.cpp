@@ -1,4 +1,4 @@
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // angel.rodriguez@udit.es
 //samuel.campos@alumnos.udit.es
 
@@ -37,7 +37,7 @@ namespace udit
         {
             for (unsigned x = 0; x < n_vertices_x; ++x)
             {
-                // Posición (centrada en 0,0)
+                // Posici?n (centrada en 0,0)
                 float pos_x = -width * 0.5f + x * x_step;
                 float pos_z = -depth * 0.5f + z * z_step;
 
@@ -61,18 +61,18 @@ namespace udit
         {
             for (unsigned x = 0; x < x_slices; ++x)
             {
-                // Índices de los 4 vértices de un cuadrado (Quad)
+                // Indices de los 4 vertices de un cuadrado (Quad)
                 unsigned int top_left = (z * n_vertices_x) + x;
                 unsigned int top_right = top_left + 1;
                 unsigned int bottom_left = ((z + 1) * n_vertices_x) + x;
                 unsigned int bottom_right = bottom_left + 1;
 
-                // Triángulo 1 (Top-Left -> Bottom-Left -> Top-Right)
+                // Triangulo 1 (Top-Left -> Bottom-Left -> Top-Right)
                 indices[index_ptr++] = top_left;
                 indices[index_ptr++] = bottom_left;
                 indices[index_ptr++] = top_right;
 
-                // Triángulo 2 (Top-Right -> Bottom-Left -> Bottom-Right)
+                // Triangulo 2 (Top-Right -> Bottom-Left -> Bottom-Right)
                 indices[index_ptr++] = top_right;
                 indices[index_ptr++] = bottom_left;
                 indices[index_ptr++] = bottom_right;
@@ -96,7 +96,6 @@ namespace udit
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
 
-        //VBO DE ÍNDICES (ELEMENT ARRAY BUFFER)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[INDICES_VBO]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
     }

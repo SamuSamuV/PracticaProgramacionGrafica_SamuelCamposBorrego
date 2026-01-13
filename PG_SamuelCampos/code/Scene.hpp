@@ -11,8 +11,11 @@
 #include "Water.hpp"
 
 #include <Color_Buffer.hpp>
-#include <memory>
+#include <memory>   // NECESARIO PARA shared_ptr
 #include <string>
+#include <vector>
+#include <fstream>  // NECESARIO PARA LEER ARCHIVOS
+#include <sstream>  // NECESARIO PARA PARSEAR
 #include <glad/gl.h>
 
 namespace udit
@@ -39,11 +42,15 @@ namespace udit
         void   build_framebuffer();
         void   render_framebuffer();
 
-        Camera  camera;
-        Skybox  skybox;
-        Terrain terrain;
-        Cube    cube;
-        Water   water;
+        // FUNCIÓN NUEVA PARA CARGAR ESCENA
+        void   load_scene(const std::string& path);
+
+        // AHORA SON PUNTEROS INTELIGENTES
+        std::shared_ptr<Camera>  camera;
+        std::shared_ptr<Skybox>  skybox;
+        std::shared_ptr<Terrain> terrain;
+        std::shared_ptr<Cube>    cube;
+        std::shared_ptr<Water>   water;
 
         // Variables Framebuffer
         GLuint framebuffer_id;

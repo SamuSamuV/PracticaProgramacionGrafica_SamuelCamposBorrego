@@ -1,4 +1,4 @@
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // samuel.campos@alumnos.udit.es
 
 #ifndef WATER_HEADER

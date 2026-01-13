@@ -1,4 +1,4 @@
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // samuel.campos@alumnos.udit.es
 
 #ifndef GROUND_HEADER
@@ -13,7 +13,7 @@ namespace udit
     {
     private:
 
-        // Índices para indexar el array vbo_ids:
+        // ?ndices para indexar el array vbo_ids:
         enum
         {
             COORDINATES_VBO,

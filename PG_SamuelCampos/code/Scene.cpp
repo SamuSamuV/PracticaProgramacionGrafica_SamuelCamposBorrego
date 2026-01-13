@@ -1,5 +1,6 @@
 // Este código es de dominio público
 // angel.rodriguez@udit.es
+// Modificado por samuel.campos@alumnos.udit.es
 
 #include "Scene.hpp"
 #include <iostream>
@@ -16,7 +17,7 @@
 
 namespace udit
 {
-    // SHADERS POST-PROCESADO
+    // Shaders del Post-Procesado
     const std::string Scene::effect_vertex_shader = R"(
         #version 330
         layout (location = 0) in vec3 vertex_coordinates;
@@ -40,7 +41,7 @@ namespace udit
         }
     )";
 
-    // SHADERS TERRENO
+    // Shaders del terreno
     const std::string Scene::terrain_vertex_shader = R"(
         #version 330
         struct Light { vec4 position; vec3 color; };
@@ -98,7 +99,7 @@ namespace udit
         }
     )";
 
-    // SHADERS CUBO
+    // Shaders del cubo
     const std::string Scene::cube_vertex_shader = R"(
         #version 330
         uniform mat4 model_view_matrix;
@@ -155,16 +156,19 @@ namespace udit
 
 
     Scene::Scene(int width, int height)
-        : width(width), height(height),
-        skybox("../../../shared/assets/sky-cube-map-"),
-        terrain(20.f, 20.f, 100, 100),
-        water(50.f, 50.f)
+        : width(width), height(height)
     {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 
         build_framebuffer();
+
+        camera = std::make_shared<Camera>();
+        camera->set_location(0.f, 5.f, 15.f);
+
+        load_scene("../../../shared/assets/Scene.txt");
+
         resize(width, height);
 
         fog_near = 5.0f;
@@ -175,7 +179,7 @@ namespace udit
 
         effect_program_id = compile_shaders(effect_vertex_shader, effect_fragment_shader);
 
-        // TERRENO
+        // Terreno
         terrain_program_id = compile_shaders(terrain_vertex_shader, terrain_fragment_shader);
 
         terrain_mv_id = glGetUniformLocation(terrain_program_id, "model_view_matrix");
@@ -200,7 +204,7 @@ namespace udit
         if (terrain_diffuse_sampler_id != -1) glUniform1i(terrain_diffuse_sampler_id, 1);
         glUseProgram(0);
 
-        // CUBOS
+        // Cubos
         cube_program_id = compile_shaders(cube_vertex_shader, cube_fragment_shader);
 
         cube_mv_id = glGetUniformLocation(cube_program_id, "model_view_matrix");
@@ -221,15 +225,12 @@ namespace udit
 
         cube_angle = 0.0f;
 
-        // CONTROL
         angle_around_x = angle_delta_x = 0.0;
         angle_around_y = angle_delta_y = 0.0;
         pointer_pressed = false;
         camera_speed = 0.1f;
         boost_camera_speed = false;
         for (int i = 0; i < 6; ++i) keys_pressed[i] = false;
-
-        camera.set_location(0.f, 5.f, 15.f);
     }
 
     Scene::~Scene()
@@ -250,6 +251,55 @@ namespace udit
         if (there_is_cube_texture_2) glDeleteTextures(1, &cube_texture_2_id);
     }
 
+    void Scene::load_scene(const std::string& path)
+    {
+        std::ifstream file(path);
+        if (!file.is_open())
+        {
+            std::cerr << "AVISO: No se pudo abrir " << path << ". Cargando escena por defecto." << std::endl;
+            terrain = std::make_shared<Terrain>(20.f, 20.f, 100, 100);
+            water = std::make_shared<Water>(50.f, 50.f);
+            skybox = std::make_shared<Skybox>("../../../shared/assets/sky-cube-map-");
+            cube = std::make_shared<Cube>();
+            return;
+        }
+
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
+
+            std::stringstream iss(line);
+            std::string type;
+            iss >> type;
+
+            if (type == "SKYBOX")
+            {
+                std::string texture_path;
+                iss >> texture_path;
+                skybox = std::make_shared<Skybox>(texture_path);
+            }
+            else if (type == "TERRAIN")
+            {
+                float w, d;
+                int xs, zs;
+                iss >> w >> d >> xs >> zs;
+                terrain = std::make_shared<Terrain>(w, d, xs, zs);
+            }
+            else if (type == "WATER")
+            {
+                float w, d;
+                iss >> w >> d;
+                water = std::make_shared<Water>(w, d);
+            }
+            else if (type == "CUBE_MALLA")
+            {
+                cube = std::make_shared<Cube>();
+            }
+        }
+        std::cout << "Escena cargada desde " << path << std::endl;
+    }
+
     void Scene::update()
     {
         cube_angle += 0.01f;
@@ -264,11 +314,11 @@ namespace udit
         camera_rotation = glm::rotate(camera_rotation, angle_around_y, glm::vec3(0.f, 1.f, 0.f));
         camera_rotation = glm::rotate(camera_rotation, angle_around_x, glm::vec3(1.f, 0.f, 0.f));
 
-        auto current_loc = camera.get_location();
-        camera.set_target(current_loc[0], current_loc[1], current_loc[2] - 1.0f);
-        camera.rotate(camera_rotation);
+        auto current_loc = camera->get_location();
+        camera->set_target(current_loc[0], current_loc[1], current_loc[2] - 1.0f);
+        camera->rotate(camera_rotation);
 
-        glm::vec4 forward_v4 = camera.get_target() - camera.get_location();
+        glm::vec4 forward_v4 = camera->get_target() - camera->get_location();
         glm::vec3 forward = glm::normalize(glm::vec3(forward_v4));
         glm::vec3 right = glm::normalize(glm::cross(forward, glm::vec3(0.f, 1.f, 0.f)));
         glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
@@ -281,7 +331,7 @@ namespace udit
         if (keys_pressed[3]) translation += right * current_speed;
         if (keys_pressed[4]) translation -= up * current_speed;
         if (keys_pressed[5]) translation += up * current_speed;
-        camera.move(translation);
+        camera->move(translation);
     }
 
     void Scene::build_framebuffer()
@@ -337,55 +387,64 @@ namespace udit
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = camera.get_transform_matrix_inverse();
-        glm::mat4 projection = camera.get_projection_matrix();
+        glm::mat4 view = camera->get_transform_matrix_inverse();
+        glm::mat4 projection = camera->get_projection_matrix();
 
-        skybox.render(camera);
+        if (skybox) skybox->render(*camera);
 
         // Render Terreno
-        glUseProgram(terrain_program_id);
-        glm::mat4 terrain_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, -2.f, 0.f));
-        glm::mat4 terrain_view_model = view * terrain_model;
-        glUniformMatrix4fv(terrain_mv_id, 1, GL_FALSE, glm::value_ptr(terrain_view_model));
-        glUniformMatrix4fv(terrain_proj_id, 1, GL_FALSE, glm::value_ptr(projection));
-        glm::mat4 normal_matrix = glm::transpose(glm::inverse(terrain_view_model));
-        glUniformMatrix4fv(terrain_normal_matrix_id, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+        if (terrain)
+        {
+            glUseProgram(terrain_program_id);
+            glm::mat4 terrain_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, -2.f, 0.f));
+            glm::mat4 terrain_view_model = view * terrain_model;
+            glUniformMatrix4fv(terrain_mv_id, 1, GL_FALSE, glm::value_ptr(terrain_view_model));
+            glUniformMatrix4fv(terrain_proj_id, 1, GL_FALSE, glm::value_ptr(projection));
+            glm::mat4 normal_matrix = glm::transpose(glm::inverse(terrain_view_model));
+            glUniformMatrix4fv(terrain_normal_matrix_id, 1, GL_FALSE, glm::value_ptr(normal_matrix));
 
-        if (there_is_texture) { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, texture_id); }
-        if (there_is_terrain_diffuse) { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, terrain_diffuse_texture_id); }
+            if (there_is_texture) { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, texture_id); }
+            if (there_is_terrain_diffuse) { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, terrain_diffuse_texture_id); }
 
-        terrain.render();
+            terrain->render();
+        }
 
-        // AGUA
-        water.render(view, projection, time);
+        // Agua
+        if (water)
+        {
+            water->render(view, projection, time);
+        }
 
         // Render Cubos
-        glUseProgram(cube_program_id);
-        glUniformMatrix4fv(cube_proj_id, 1, GL_FALSE, glm::value_ptr(projection));
-        if (there_is_cube_texture_1) { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, cube_texture_1_id); }
-        if (there_is_cube_texture_2) { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, cube_texture_2_id); }
+        if (cube)
+        {
+            glUseProgram(cube_program_id);
+            glUniformMatrix4fv(cube_proj_id, 1, GL_FALSE, glm::value_ptr(projection));
+            if (there_is_cube_texture_1) { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, cube_texture_1_id); }
+            if (there_is_cube_texture_2) { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, cube_texture_2_id); }
 
-        GLint alpha_loc = glGetUniformLocation(cube_program_id, "alpha_value");
+            GLint alpha_loc = glGetUniformLocation(cube_program_id, "alpha_value");
 
-        // Cubo Opaco
-        glUniform1f(alpha_loc, 1.0f);
-        glm::mat4 model1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 2.f, -5.f));
-        model1 = glm::rotate(model1, cube_angle, glm::vec3(0.f, 1.f, 0.f));
-        glUniformMatrix4fv(cube_mv_id, 1, GL_FALSE, glm::value_ptr(view * model1));
-        cube.render();
+            // Cubo Opaco
+            glUniform1f(alpha_loc, 1.0f);
+            glm::mat4 model1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 2.f, -5.f));
+            model1 = glm::rotate(model1, cube_angle, glm::vec3(0.f, 1.f, 0.f));
+            glUniformMatrix4fv(cube_mv_id, 1, GL_FALSE, glm::value_ptr(view * model1));
+            cube->render();
 
-        // Cubo Transparente
-        glDepthMask(GL_FALSE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glUniform1f(alpha_loc, 0.5f);
-        glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 6.f, -5.f));
-        model2 = glm::rotate(model2, cube_angle, glm::vec3(0.f, 1.f, 0.f));
-        glUniformMatrix4fv(cube_mv_id, 1, GL_FALSE, glm::value_ptr(view * model2));
-        cube.render();
-        glDisable(GL_BLEND);
-        glDepthMask(GL_TRUE);
-        glUseProgram(0);
+            // Cubo Transparente
+            glDepthMask(GL_FALSE);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glUniform1f(alpha_loc, 0.5f);
+            glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 6.f, -5.f));
+            model2 = glm::rotate(model2, cube_angle, glm::vec3(0.f, 1.f, 0.f));
+            glUniformMatrix4fv(cube_mv_id, 1, GL_FALSE, glm::value_ptr(view * model2));
+            cube->render();
+            glDisable(GL_BLEND);
+            glDepthMask(GL_TRUE);
+            glUseProgram(0);
+        }
 
         render_framebuffer();
     }
@@ -432,7 +491,7 @@ namespace udit
         width = new_width;
         height = new_height;
         if (height == 0) height = 1;
-        camera.set_ratio(float(width) / height);
+        camera->set_ratio(float(width) / height);
         glViewport(0, 0, width, height);
     }
 

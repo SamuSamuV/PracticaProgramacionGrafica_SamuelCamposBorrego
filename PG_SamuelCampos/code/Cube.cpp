@@ -1,5 +1,5 @@
 
-// Este código es de dominio público
+// Este c?digo es de dominio p?blico
 // angel.rodriguez@udit.es
 
 #include "Cube.hpp"
@@ -81,7 +81,7 @@ namespace udit
 
     Cube::Cube()
     {
-        // Se generan índices para los VBOs del cubo:
+        // Se generan ?ndices para los VBOs del cubo:
 
         glGenBuffers(VBO_COUNT, vbo_ids);
         glGenVertexArrays(1, &vao_id);
@@ -106,7 +106,7 @@ namespace udit
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-        // Se suben a un IBO los datos de índices:
+        // Se suben a un IBO los datos de ?ndices:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[INDICES_IBO]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
