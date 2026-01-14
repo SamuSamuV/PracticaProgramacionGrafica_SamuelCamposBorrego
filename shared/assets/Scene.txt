@@ -1,4 +1,16 @@
-SKYBOX ../../../shared/assets/sky-cube-map-
-TERRAIN 20.0 20.0 100 100
-WATER 50.0 50.0
-CUBE_MALLA
+# Formato: TIPO param1 param2 ...
+# LIGHT posX posY posZ r g b
+LIGHT 10.0 20.0 10.0 1.0 1.0 0.9
+
+# TERRAIN width depth slicesX slicesZ posX posY posZ
+TERRAIN 20.0 20.0 100 100 0.0 -2.0 0.0
+
+# WATER width depth posX posY posZ
+WATER 50.0 50.0 0.0 -1.8 0.0
+
+# CUBE posX posY posZ opacity 
+CUBE 0.0 2.0 -5.0 1.0
+CUBE 0.0 6.0 -5.0 0.5
+
+# TREE   Escala   Pos_X  Pos_Y  Pos_Z
+TREE       1.0      5.0    -1.0    5.0

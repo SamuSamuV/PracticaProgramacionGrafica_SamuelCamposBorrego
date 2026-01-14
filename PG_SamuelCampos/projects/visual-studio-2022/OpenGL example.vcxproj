@@ -88,10 +88,12 @@
     <ClCompile Include="..\..\..\shared\code\Window.cpp" />
     <ClCompile Include="..\..\code\Cube.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
+    <ClCompile Include="..\..\code\Node.cpp" />
     <ClCompile Include="..\..\code\Scene.cpp" />
     <ClCompile Include="..\..\code\Skybox.cpp" />
     <ClCompile Include="..\..\code\Terrain.cpp" />
     <ClCompile Include="..\..\code\Texture_Cube.cpp" />
+    <ClCompile Include="..\..\code\Tree.cpp" />
     <ClCompile Include="..\..\code\Water.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,11 +102,13 @@
     <ClInclude Include="..\..\..\shared\code\Window.hpp" />
     <ClInclude Include="..\..\code\Camera.hpp" />
     <ClInclude Include="..\..\code\Cube.hpp" />
+    <ClInclude Include="..\..\code\Light.hpp" />
     <ClInclude Include="..\..\code\Node.hpp" />
     <ClInclude Include="..\..\code\Scene.hpp" />
     <ClInclude Include="..\..\code\Skybox.hpp" />
     <ClInclude Include="..\..\code\Terrain.hpp" />
     <ClInclude Include="..\..\code\Texture_Cube.hpp" />
+    <ClInclude Include="..\..\code\Tree.hpp" />
     <ClInclude Include="..\..\code\Water.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
